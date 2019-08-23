@@ -555,3 +555,32 @@ credhub set -n /concourse/dev1/wildcard_cert -t certificate
 openssl x509 -in <( credhub get -n /concourse/dev1/wildcard_cert -k certificate ) -text -noout
 openssl x509 -in <( credhub get -n /concourse/dev1/wildcard_cert -k ca ) -text -noout
 ```
+
+## Download from S3
+
+https://docs.pivotal.io/platform-automation/v3.0/reference/inputs-outputs.html#download-product-config
+https://docs.pivotal.io/platform-automation/v3.0/reference/task.html#download-product-s3
+
+Create the file `download-config.yml`:
+
+```bash
+---
+product-version: 1.6.1
+pivnet-product-slug: p-healthwatch
+pivnet-api-token: <token>
+pivnet-file-glob: 'p-healthwatch-*.pivotal'
+
+s3-bucket: peztest
+s3-region-name: us-east-1      # required; sufficient for AWS
+s3-endpoint: s3.amazonaws.com
+s3-access-key-id: <id>
+s3-secret-access-key: <key>
+s3-product-path: /deploy
+s3-stemcell-path: /deploy
+```
+
+Then run:
+
+```bash
+om download-product --config download-config.yml --output-directory . --source s3
+```
