@@ -48,6 +48,12 @@ $ ssh ubuntu@<jumpbox or opsman> -o PubkeyAuthentication=no
 # install minio client
 $ brew install minio/stable/mc
 
+# OR on Linux
+wget https://dl.min.io/client/mc/release/linux-amd64/mc
+chmod +x mc
+sudo mv mc /usr/local/bin/mc
+./mc --help
+
 # set the host
 $ mc config host add ecs <endpoint, i.e.: https://s3.amazonaws.com> <access_id> <access_key>
 $ mc ls ecs
@@ -68,7 +74,6 @@ bosh -e director deployments --json | jq -r '.Tables[].Rows[] | select(.team_s !
 bosh -e director deployments --json | jq -r '.Tables[].Rows[] | select(.team_s|test("crunchy.")) | .name'
 ```
 
-
 ## GIT
 
 ```bash
@@ -78,10 +83,32 @@ git commit -m "comments"
 git pull
 git push
 
+# adding local files to new gitlab, github, etc. repo
+cd <local directory for new repo>
+git init    # initialize the local directory
+git add .   # add all the directories and files (does not include empty dirs)
+git commit -m "initall commit"  # commit all added files to the local git
+git remote add origin http://gitlab.domain.com/repo.git   # where will local go to on remote
+git push -u origin master    # push the local repo upstream to the remote just added above
+
 # updating a commit that hasn't been pushed
 git commit --amend --no-edit
 
 git commit --amend -m "an updated commit message"
+
+# local settings
+git config user.name "Your Name Here"
+git config user.email "your@email.com"
+
+# global settings
+git config --global http.sslVerify "false"
+git config --global user.name "<your user name>"
+git config --global user.email "<your email>"
+git config --global github.user "<git id>"
+git config --global github.token "<git token>"
+
+# edit the Global config file directly
+git config --edit --global
 ```
 
 
