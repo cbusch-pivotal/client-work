@@ -1,0 +1,4 @@
+- type: replace
+  path: /product-properties/.properties.use_proxy.enabled.proxy_host?
+  value:
+    value: ((use_proxy_enabled_proxy_host))

@@ -1,0 +1,3 @@
+- type: replace
+  path: /resource-config?/errand-runner?/additional_vm_extensions?
+  value: ((errand-runner_additional_vm_extensions))

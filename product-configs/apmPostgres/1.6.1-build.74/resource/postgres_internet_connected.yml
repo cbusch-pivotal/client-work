@@ -1,0 +1,3 @@
+- type: replace
+  path: /resource-config?/postgres?/internet_connected?
+  value: ((postgres_internet_connected))

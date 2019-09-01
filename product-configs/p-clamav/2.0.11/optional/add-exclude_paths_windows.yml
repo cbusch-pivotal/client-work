@@ -1,0 +1,4 @@
+- type: replace
+  path: /product-properties/.properties.exclude_paths_windows?
+  value:
+    value: ((exclude_paths_windows))

@@ -1,0 +1,9 @@
+- type: replace
+  path: /product-properties/.properties.upstream_mirror?
+  value:
+    value: external_mirror
+    selected_option: external_mirror
+- type: replace
+  path: /product-properties/.properties.upstream_mirror.external_mirror.database_mirrors?
+  value:
+    value: ((upstream_mirror_external_mirror_database_mirrors))

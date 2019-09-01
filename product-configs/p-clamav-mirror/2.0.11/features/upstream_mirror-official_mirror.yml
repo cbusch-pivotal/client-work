@@ -1,0 +1,5 @@
+- type: replace
+  path: /product-properties/.properties.upstream_mirror?
+  value:
+    value: official_mirror
+    selected_option: official_mirror

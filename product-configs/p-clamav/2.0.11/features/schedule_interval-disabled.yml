@@ -1,0 +1,9 @@
+- type: replace
+  path: /product-properties/.properties.schedule_interval?
+  value:
+    value: disabled
+    selected_option: disabled
+- type: remove
+  path: /product-properties/.properties.schedule_interval.daily.first_scheduled_scan_time?
+- type: remove
+  path: /product-properties/.properties.schedule_interval.daily.last_scheduled_scan_time?

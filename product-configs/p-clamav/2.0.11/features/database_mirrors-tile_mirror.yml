@@ -1,0 +1,7 @@
+- type: replace
+  path: /product-properties/.properties.database_mirrors?
+  value:
+    value: tile_mirror
+    selected_option: tile_mirror
+- type: remove
+  path: /product-properties/.properties.database_mirrors.private_mirror.mirror_urls?

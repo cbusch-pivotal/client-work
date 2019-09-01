@@ -1,0 +1,5 @@
+- type: replace
+  path: /product-properties/.properties.action?
+  value:
+    value: remove
+    selected_option: remove

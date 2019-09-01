@@ -1,0 +1,3 @@
+- type: replace
+  path: /resource-config?/postgres?/additional_vm_extensions?
+  value: ((postgres_additional_vm_extensions))

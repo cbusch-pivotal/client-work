@@ -1,0 +1,8 @@
+errand-runner_instance_type: automatic
+errand-runner_persistent_disk_size: automatic
+mysql_instance_type: automatic
+mysql_persistent_disk_size: automatic
+postgres_instance_type: automatic
+postgres_persistent_disk_size: automatic
+redis_instance_type: automatic
+redis_persistent_disk_size: automatic

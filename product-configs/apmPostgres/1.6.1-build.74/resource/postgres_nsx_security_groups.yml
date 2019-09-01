@@ -1,0 +1,3 @@
+- type: replace
+  path: /resource-config?/postgres?/nsx_security_groups?
+  value: ((postgres_nsx_security_groups))

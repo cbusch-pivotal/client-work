@@ -1,0 +1,3 @@
+- type: replace
+  path: /resource-config?/errand-runner?/internet_connected?
+  value: ((errand-runner_internet_connected))

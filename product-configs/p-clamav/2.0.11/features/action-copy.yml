@@ -1,0 +1,9 @@
+- type: replace
+  path: /product-properties/.properties.action?
+  value:
+    value: copy
+    selected_option: copy
+- type: replace
+  path: /product-properties/.properties.action.copy.action_destination?
+  value:
+    value: ((action_copy_action_destination))

@@ -1,0 +1,9 @@
+- type: replace
+  path: /product-properties/.properties.enforce_cpu_limit?
+  value:
+    value: enabled
+    selected_option: enabled
+- type: replace
+  path: /product-properties/.properties.enforce_cpu_limit.enabled.cpu_limit?
+  value:
+    value: ((enforce_cpu_limit_enabled_cpu_limit))

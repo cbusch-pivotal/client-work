@@ -1,0 +1,3 @@
+- type: replace
+  path: /resource-config?/postgres?/elb_names?
+  value: ((postgres_elb_names))

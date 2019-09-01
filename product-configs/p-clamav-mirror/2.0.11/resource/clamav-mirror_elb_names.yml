@@ -1,0 +1,3 @@
+- type: replace
+  path: /resource-config?/clamav-mirror?/elb_names?
+  value: ((clamav-mirror_elb_names))

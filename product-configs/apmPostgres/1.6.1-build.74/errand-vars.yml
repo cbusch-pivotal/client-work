@@ -1,0 +1,5 @@
+delete-prior-space_post_deploy_state: default
+delete-space_pre_delete_state: default
+migrate-route_post_deploy_state: default
+push-apps_post_deploy_state: default
+smoke-tests_post_deploy_state: default
