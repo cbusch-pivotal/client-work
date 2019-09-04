@@ -87,6 +87,14 @@ bosh interpolate \
      product.yml > product-new.yml
 ```
 
+#### Remove '\n' from certificates coming out of a yml or credhub
+
+```bash
+bosh interpolate <(awk -v ORS='\\n' '1' <(printenv DIRECTOR_CONFIG | tr -d '\r')) > config/director.yml
+bosh interpolate <(awk -v ORS='\\n' '1' <(echo -n "${OPSMAN_CONFIG}" | tr -d '\r') | sed -e 's/..$//') > config/opsman.yml
+```
+
+
 ## GIT
 
 ```bash
@@ -271,13 +279,6 @@ export apps=( $(cf services | grep "jigsaw-mysql" | awk '{print $4}' | sed "s/,/
 ```bash
 local pas_username=$(om -e env/env.yml -k credentials --product-name cf --credential-reference=.uaa.admin_credentials -f=identity)
 local pas_password=$(om -e env/env.yml -k credentials --product-name cf --credential-reference=.uaa.admin_credentials -f=password)
-```
-
-#### Remove '\n' from certificates coming out of a yml or credhub
-
-```bash
-bosh interpolate <(awk -v ORS='\\n' '1' <(printenv DIRECTOR_CONFIG | tr -d '\r')) > config/director.yml
-bosh interpolate <(awk -v ORS='\\n' '1' <(echo -n "${OPSMAN_CONFIG}" | tr -d '\r') | sed -e 's/..$//') > config/opsman.yml
 ```
 
 #### GENERATE A NEW Operations Manager CERTIFICATE
