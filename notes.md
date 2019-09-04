@@ -74,6 +74,19 @@ bosh -e director deployments --json | jq -r '.Tables[].Rows[] | select(.team_s !
 bosh -e director deployments --json | jq -r '.Tables[].Rows[] | select(.team_s|test("crunchy.")) | .name'
 ```
 
+### Interpolating Ops-files (operations files)
+
+```bash
+bosh interpolate -o features/uaa-saml.yml product.yml > product-new.yml
+
+bosh interpolate \
+     -o features/uaa-saml.yml \
+     -o network/2-az-configuration.yml \
+     -o optional/add-diego_brain-static_ips.yml \
+     -o optional/add-router-static_ips.yml \
+     product.yml > product-new.yml
+```
+
 ## GIT
 
 ```bash
