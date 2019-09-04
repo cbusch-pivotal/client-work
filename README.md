@@ -2,7 +2,7 @@
 
 ### Retrospective
 
-[Retro Board](https://retros.cfapps.io/retros/bureau)
+[Retro Board](https://retros.cfapps.io/retros/)
 
 ### Other Links
 
