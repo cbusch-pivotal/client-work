@@ -1,0 +1,3 @@
+- type: replace
+  path: /resource-config?/oscap_store?/internet_connected?
+  value: ((oscap_store_internet_connected))

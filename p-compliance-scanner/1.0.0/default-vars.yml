@@ -1,0 +1,5 @@
+ntp_server: 169.254.169.254
+openfile_limit: 2048
+scanner_timeout: 1200
+syslog_host: 192.0.2.1
+syslog_port: 514

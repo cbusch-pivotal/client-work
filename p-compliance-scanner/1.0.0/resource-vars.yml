@@ -1,0 +1,3 @@
+oscap_store_instance_type: automatic
+oscap_store_instances: automatic
+oscap_store_persistent_disk_size: automatic

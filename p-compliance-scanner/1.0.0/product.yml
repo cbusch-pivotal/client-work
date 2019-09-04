@@ -1,0 +1,40 @@
+product-name: p-compliance-scanner
+network-properties:
+  network:
+    name: ((network_name))
+  other_availability_zones:
+  - name: ((singleton_availability_zone))
+  singleton_availability_zone:
+    name: ((singleton_availability_zone))
+product-properties:
+  .properties.benchmarks:
+    value:
+    - base
+    - recommended
+    - strict
+    - stig
+  .properties.ntp_server:
+    value: ((ntp_server))
+  .properties.openfile_limit:
+    value: ((openfile_limit))
+  .properties.scan_report_formats:
+    value:
+    - log
+    - xml
+    - html
+  .properties.scanner_timeout:
+    value: ((scanner_timeout))
+  .properties.syslog_host:
+    value: ((syslog_host))
+  .properties.syslog_port:
+    value: ((syslog_port))
+resource-config:
+  oscap_store:
+    instance_type:
+      id: ((oscap_store_instance_type))
+    instances: ((oscap_store_instances))
+    persistent_disk:
+      size_mb: ((oscap_store_persistent_disk_size))
+errand-config:
+  scan_results:
+    post-deploy-state: ((scan_results_post_deploy_state))

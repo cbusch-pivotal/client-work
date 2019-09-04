@@ -1,0 +1,4 @@
+- type: replace
+  path: /product-properties/.properties.bucket_selector.minio.bucket_ca_cert?
+  value:
+    value: ((bucket_selector_minio_bucket_ca_cert))
