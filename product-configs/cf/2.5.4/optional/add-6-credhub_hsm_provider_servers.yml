@@ -1,0 +1,28 @@
+- type: replace
+  path: /product-properties/.properties.credhub_hsm_provider_servers?
+  value:
+    value:
+    - host_address: ((credhub_hsm_provider_servers_0_host_address))
+      hsm_certificate: ((credhub_hsm_provider_servers_0_hsm_certificate))
+      partition_serial_number: ((credhub_hsm_provider_servers_0_partition_serial_number))
+      port: ((credhub_hsm_provider_servers_0_port))
+    - host_address: ((credhub_hsm_provider_servers_1_host_address))
+      hsm_certificate: ((credhub_hsm_provider_servers_1_hsm_certificate))
+      partition_serial_number: ((credhub_hsm_provider_servers_1_partition_serial_number))
+      port: ((credhub_hsm_provider_servers_1_port))
+    - host_address: ((credhub_hsm_provider_servers_2_host_address))
+      hsm_certificate: ((credhub_hsm_provider_servers_2_hsm_certificate))
+      partition_serial_number: ((credhub_hsm_provider_servers_2_partition_serial_number))
+      port: ((credhub_hsm_provider_servers_2_port))
+    - host_address: ((credhub_hsm_provider_servers_3_host_address))
+      hsm_certificate: ((credhub_hsm_provider_servers_3_hsm_certificate))
+      partition_serial_number: ((credhub_hsm_provider_servers_3_partition_serial_number))
+      port: ((credhub_hsm_provider_servers_3_port))
+    - host_address: ((credhub_hsm_provider_servers_4_host_address))
+      hsm_certificate: ((credhub_hsm_provider_servers_4_hsm_certificate))
+      partition_serial_number: ((credhub_hsm_provider_servers_4_partition_serial_number))
+      port: ((credhub_hsm_provider_servers_4_port))
+    - host_address: ((credhub_hsm_provider_servers_5_host_address))
+      hsm_certificate: ((credhub_hsm_provider_servers_5_hsm_certificate))
+      partition_serial_number: ((credhub_hsm_provider_servers_5_partition_serial_number))
+      port: ((credhub_hsm_provider_servers_5_port))

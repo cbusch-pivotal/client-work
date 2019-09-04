@@ -1,0 +1,3 @@
+- type: replace
+  path: /resource-config?/clamav-mirror?/additional_vm_extensions?
+  value: ((clamav-mirror_additional_vm_extensions))

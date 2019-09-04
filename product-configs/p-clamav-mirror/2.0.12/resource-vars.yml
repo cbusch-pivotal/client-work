@@ -1,0 +1,3 @@
+clamav-mirror_instance_type: automatic
+clamav-mirror_instances: automatic
+clamav-mirror_persistent_disk_size: automatic

@@ -1,0 +1,22 @@
+product-name: p-clamav-mirror
+network-properties:
+  network:
+    name: ((network_name))
+  other_availability_zones:
+  - name: ((singleton_availability_zone))
+  singleton_availability_zone:
+    name: ((singleton_availability_zone))
+product-properties:
+  .properties.log_destination:
+    value: ((log_destination))
+  .properties.upstream_mirror:
+    value: no_upstream_mirror
+  .properties.use_proxy:
+    value: disabled
+resource-config:
+  clamav-mirror:
+    instance_type:
+      id: ((clamav-mirror_instance_type))
+    instances: ((clamav-mirror_instances))
+    persistent_disk:
+      size_mb: ((clamav-mirror_persistent_disk_size))

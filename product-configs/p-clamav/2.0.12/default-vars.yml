@@ -1,0 +1,6 @@
+daily_db_check_frequency: 12
+exclude_paths: /proc/,/sys/
+memory_limit: 1610612736
+on_access: false
+schedule_interval_daily_first_scheduled_scan_time: '"00:00"'
+schedule_interval_daily_last_scheduled_scan_time: '"23:59"'

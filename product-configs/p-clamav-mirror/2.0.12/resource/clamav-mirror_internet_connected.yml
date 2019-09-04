@@ -1,0 +1,3 @@
+- type: replace
+  path: /resource-config?/clamav-mirror?/internet_connected?
+  value: ((clamav-mirror_internet_connected))
