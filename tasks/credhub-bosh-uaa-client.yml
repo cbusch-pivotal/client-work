@@ -1,0 +1,208 @@
+---
+platform: linux
+
+inputs:
+- name: cantina
+- name: env # contains the env file with target OpsMan Information
+
+params:
+  ENV_FILE: env.yml
+  # - Filepath of the env config YAML
+  # - The path is relative to root of the `env` input
+  CA:
+  # - Local CA for signing Ops-Manager dcertificates
+  FOUNDATION_NAME:
+  # - Foundation name (e.g. 'phoenix-staging')
+  JUMPBOX_IP_ADDRESS:
+  # - SCP/MDC jumpbox IP address
+  JUMPBOX_SSH_USER:
+  # - SCP/MDC SSH user
+  JUMPBOX_SSH_PASSWORD:
+  # - SCP/MDC SSH password
+  OPSMAN_DOMAIN_OR_IP_ADDRESS:
+  # - OpsMan FQDN (or IP)
+  OPSMAN_SSH_USER:
+  # - OpsMan SSH password
+  OPSMAN_SSH_PASSWORD:
+  # - OpsMan SSH password
+  CREDHUB_SERVER:
+  CREDHUB_CA_CERT:
+  CREDHUB_CLIENT:
+  CREDHUB_SECRET:
+  # - ^CREDHUB_* variables
+  # - Credhub connection details
+  # - https://github.com/cloudfoundry-incubator/credhub-cli/blob/master/commands/login.go#L17
+  BOSH_UAA_CLIENT:
+  # - BOSH UAA client to add/delete
+  CREDHUB_ACTION:
+  # - Allowed actions: [create, delete]
+  # - Create credential when absent
+  BOSH_UAA_GRANTS:
+  BOSH_UAA_AUTHORITIES:
+  BOSH_UAA_SCOPE:
+  # - ^BOSH_UAA_* variables
+  # - Comma-separated list of client grants, scopes and authorities
+  BOSH_UAA_ACTION:
+  # - Allowed actions: ['create', 'update', 'delete']
+  # - Create client, update if already present
+  BOSH_UAA_PORT:
+  # - Listening port for UAA
+
+run:
+  path: bash
+  args:
+  - "-c"
+  - |
+    set -eu
+
+    if [[ -n "${CA}" ]] && [[ ! "${CA}" == null ]]; then
+      source cantina/tasks/functions/update-ca-certificates.sh
+      update_ca_certificates "${CA}"
+    fi
+
+    function create_tunnel() {
+      local ssh_user="${1}"
+      local ssh_password="${2}"
+      local ssh_ip_or_fqdn="${3}"
+      local ssh_port="${4}"
+
+      sshpass -p ${ssh_password} ssh -q -o StrictHostKeyChecking=no -M \
+        -S "${ssh_ip_or_fqdn}.sock" -D ${ssh_port} -NCf \
+        ${ssh_user}@${ssh_ip_or_fqdn} -o ServerAliveInterval=60
+      echo "INFO: Establishing SSH tunnel to ${ssh_ip_or_fqdn}"
+    }
+
+    function cleanup_socks_proxy {
+      local ssh_ip_or_fqdn="${1}"
+      echo "INFO: Killing tunnel to ${ssh_ip_or_fqdn}"
+      ssh -S "${ssh_ip_or_fqdn}.sock" -O exit "${ssh_ip_or_fqdn}"
+    }
+
+    function create_proxy() {
+      local proxy="socks5://127.0.0.1:${1}"
+
+      export CREDHUB_PROXY="${proxy}"
+    }
+
+    function bosh_director_login_info() {
+      local bosh_director_id=$(om --env env/"${ENV_FILE}" \
+        curl --silent --path /api/v0/staged/products \
+        | jq '.[].guid | select(startswith("p-bosh"))' -r)
+
+      echo "INFO: Getting BOSH director IP from OpsMan..."
+      export BOSH_DIRECTOR_IP=$(om --env env/"${ENV_FILE}" \
+        curl --path=/api/v0/deployed/products/${bosh_director_id}/static_ips \
+        | jq -r .[0].ips[0])
+
+      echo "INFO: Getting BOSH UAA creds from OpsMan..."
+      export UAA_LOGIN_SECRET=$(om --env env/"${ENV_FILE}" \
+          curl -s -p /api/v0/deployed/director/credentials/uaa_login_client_credentials \
+          | jq -r .credential.value.password)
+      export UAA_ADMIN_USER_PASSWORD=$(om --env env/"${ENV_FILE}" \
+          curl -s -p /api/v0/deployed/director/credentials/uaa_admin_user_credentials \
+          | jq -r .credential.value.password)
+    }
+
+    function generate_ssh_vars() {
+      export LC_BOSH_DIRECTOR_IP="${BOSH_DIRECTOR_IP}"
+      export LC_BOSH_UAA_AUTHORITIES="${BOSH_UAA_AUTHORITIES}"
+      export LC_BOSH_UAA_CLIENT="${BOSH_UAA_CLIENT}"
+      export LC_BOSH_UAA_GRANTS="${BOSH_UAA_GRANTS}"
+      export LC_BOSH_UAA_SCOPE="${BOSH_UAA_SCOPE:-uaa.none}"
+      export LC_BOSH_UAA_PORT="${BOSH_UAA_PORT}"
+      export LC_CREDHUB_BOSH_UAA_CLIENT_SECRET="${CREDHUB_BOSH_UAA_CLIENT_SECRET:-}"
+      export LC_UAA_ADMIN_USER_PASSWORD="${UAA_ADMIN_USER_PASSWORD}"
+      export LC_UAA_LOGIN_SECRET="${UAA_LOGIN_SECRET}"
+    }
+
+    function credhub_login() {
+
+      unset http_proxy HTTP_PROXY
+      credhub api
+      credhub login
+    }
+
+    function uaa_login() {
+      local opsman_ssh_user="${1}"
+      local opsman_ssh_password="${2}"
+      local opsman_ssh_fqdn="${3}"
+
+      sshpass -p ${opsman_ssh_password} ssh -q -o StrictHostKeyChecking=no \
+        "${opsman_ssh_user}"@"${opsman_ssh_fqdn}" '\
+      uaac target https://${LC_BOSH_DIRECTOR_IP}:${LC_BOSH_UAA_PORT} \
+        --ca-cert /var/tempest/workspaces/default/root_ca_certificate; \
+      uaac token owner get login -s ${LC_UAA_LOGIN_SECRET} admin \
+        --password ${LC_UAA_ADMIN_USER_PASSWORD}'
+    }
+
+    function credhub_operations() {
+      local credhub_action="${1}"
+      local credhub_keyname="${2}"
+      local foundation_name="${3}"
+      local bosh_uaa_client="${4}"
+      local credhub_find_result=""
+      local credential_path="/concourse/${foundation_name}/${credhub_keyname}"
+
+      if [[ "${credhub_action}" != "delete" ]] && [[ "${credhub_action}" != "create" ]]; then
+        echo "ERROR: Invalid CREDHUB action: '${credhub_action}' specified. Permitted actions: ['create', 'delete']."
+        exit 1
+      fi
+
+      if [[ ${credhub_action} == "delete" ]]; then
+        echo "INFO: Deleting ${credential_path}"
+        credhub delete -n "${credential_path}" 2> /dev/null || true
+      else
+        echo "INFO: Checking if ${credhub_keyname} user exists in credhub..."
+        credhub_result="$(credhub get -n ${credential_path} 2> /dev/null || true)"
+        if [[ -z ${credhub_result} ]]; then
+          echo "INFO: ${credential_path} doesn't exist. Creating..."
+          # add and generate password for user
+          credhub generate -t user -n "${credential_path}" --username ${bosh_uaa_client}
+        fi
+        # get the credhub client secret
+        export CREDHUB_BOSH_UAA_CLIENT_SECRET="$(credhub get -n ${credential_path} --key password)"
+      fi
+    }
+
+    function uaa_operations() {
+      local opsman_ssh_user="${1}"
+      local opsman_ssh_password="${2}"
+      local opsman_ssh_fqdn="${3}"
+      local bosh_uaa_action="${4}"
+
+      if [[ "${bosh_uaa_action}" != "delete" ]] && [[ "${bosh_uaa_action}" != "create" ]]; then
+        echo "ERROR: Invalid BOSH UAA action: '${bosh_uaa_action}' specified. Permitted actions: ['create', 'delete']."
+        exit 1
+      fi
+
+      echo "INFO: Deleting BOSH UAA client ${LC_BOSH_UAA_CLIENT}..."
+      sshpass -p ${opsman_ssh_password} ssh -q -o StrictHostKeyChecking=no \
+        "${opsman_ssh_user}"@"${opsman_ssh_fqdn}" '\
+        uaac client delete ${LC_BOSH_UAA_CLIENT} 2> /dev/null || true'
+
+      if [[ "${bosh_uaa_action}" == "create" ]]; then
+        echo "INFO: Creating the BOSH UAA client ${LC_BOSH_UAA_CLIENT}..."
+        sshpass -p ${opsman_ssh_password} ssh -q -o StrictHostKeyChecking=no \
+          "${opsman_ssh_user}"@"${opsman_ssh_fqdn}" '\
+          uaac client add ${LC_BOSH_UAA_CLIENT} \
+            --authorized_grant_types ${LC_BOSH_UAA_GRANTS} \
+            --authorities ${LC_BOSH_UAA_AUTHORITIES} \
+            --secret ${LC_CREDHUB_BOSH_UAA_CLIENT_SECRET} \
+            --scope ${LC_BOSH_UAA_SCOPE}'
+      fi
+    }
+
+    # Instantiate the SCP/MDC jumpbox tunnel
+    # Perform credhub CRUD operations via tunnel
+    create_tunnel "${JUMPBOX_SSH_USER}" "${JUMPBOX_SSH_PASSWORD}" "${JUMPBOX_IP_ADDRESS}" 9090
+    create_proxy 9090
+    credhub_login
+    credhub_keyname="$(echo ${BOSH_UAA_CLIENT} | tr '[:upper:]' '[:lower:]')"
+    credhub_operations "${CREDHUB_ACTION}" "${credhub_keyname}" "${FOUNDATION_NAME}" "${BOSH_UAA_CLIENT}"
+    cleanup_socks_proxy "${JUMPBOX_IP_ADDRESS}"
+
+    # Perform UAA CRUD operations via SSH
+    bosh_director_login_info
+    generate_ssh_vars
+    uaa_login "${OPSMAN_SSH_USER}" "${OPSMAN_SSH_PASSWORD}" "${OPSMAN_DOMAIN_OR_IP_ADDRESS}"
+    uaa_operations "${OPSMAN_SSH_USER}" "${OPSMAN_SSH_PASSWORD}" "${OPSMAN_DOMAIN_OR_IP_ADDRESS}" "${BOSH_UAA_ACTION}"

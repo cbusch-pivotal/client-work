@@ -1,0 +1,110 @@
+---
+platform: linux
+
+inputs:
+- name: cantina
+- name: env # contains the env file with target OpsMan Information
+
+params:
+  CA:
+  # - Optional
+  # - Local CA for signing Ops-Manager certificates
+  OPSMAN_DOMAIN_OR_IP_ADDRESS:
+  # - FQDN or IP of Ops-Manager
+  OPSMAN_TLS_CRT:
+  # - TLS certificate for tempest-web
+  OPSMAN_TLS_KEY:
+  # - TLS key for tempest-web
+  ENV_FILE: env.yml
+  # - Filepath of the env config YAML
+  # - The path is relative to root of the `env` input
+  POLL_ATTEMPTS: 120
+  # - Maximum attempts to poll Ops-Manager
+  POLL_INTERVAL: 3
+  # - Interval, in seconds, to poll Ops-Manager
+run:
+  path: bash
+  args:
+  - "-c"
+  - |
+    set -eu
+    shopt -s expand_aliases
+    alias om='om --env env/"${ENV_FILE}" --skip-ssl-validation'
+
+    if [[ -n "${CA}" ]] && [[ ! "${CA}" == null ]]; then
+      source cantina/tasks/functions/update-ca-certificates.sh
+      update_ca_certificates "${CA}"
+    fi
+
+    function fetch_certificate() {
+      echo -e "\nINFO: Current certificate configuration:"
+      om curl --silent --path /api/v0/settings/ssl_certificate | jq
+    }
+
+    function format_certificate() {
+      local input="${1}"
+
+      sed -E ':a;N;$!ba;s/\r{0,1}\n/\r\n/g' <(echo "${input}")
+    }
+
+    function poll_opsman() {
+      local opsman_fqdn="${1}"
+      local poll_attempts="${2}"
+      local poll_interval="${3}"
+      local opsman_cert=opsman.cer
+      local counter=0
+
+      while [[ $counter -lt "${poll_attempts}" ]]; do
+        counter=$((counter+1))
+        cert_validity="$(openssl s_client -servername ${opsman_fqdn} \
+          -connect ${opsman_fqdn}:443 </dev/null 2>/dev/null \
+          | awk '/Verify return code/ {print $4}' || true)"
+
+        if [[ "${cert_validity:-666}" -eq 0 ]]; then
+          echo "INFO: Certificate OK! Continuing."
+          return 0
+          break
+        fi
+
+        echo "INFO: ${opsman_fqdn} is presenting an invalid certificate. Retrying in ${poll_interval}s."
+        sleep "${poll_interval}"
+        continue
+      done
+      echo "ERROR: Unable to verify ceritificate after ${poll_attempts} attempts."
+      return 1
+    }
+
+    function generate_json() {
+      local certificate="${1}"
+      local private_key="${2}"
+
+      jq -c -n --arg certificate "${certificate}" --arg private_key "${private_key}" \
+        '{"ssl_certificate":{"certificate":$certificate,"private_key":$private_key}}'
+    }
+
+    function update_certificate() {
+      local certificate="${1}"
+      local private_key="${2}"
+      local payload="${3}"
+
+      echo -e "\nINFO: Updating certificate on Ops-Manager (${OPSMAN_DOMAIN_OR_IP_ADDRESS})."
+      om curl --silent \
+        --request PUT \
+        --path /api/v0/settings/ssl_certificate \
+        --data "${payload}" > /dev/null
+    }
+
+    fetch_certificate
+
+    if [[ -z "${OPSMAN_TLS_CRT:-}" ]] || [[ -z "${OPSMAN_TLS_KEY:-}" ]] ; then
+      echo "Nothing to do. An updated certificate was not specified."
+    elif [[ "${OPSMAN_TLS_CRT}" == "null" ]] || [[ "${OPSMAN_TLS_KEY}" == "null" ]] ; then
+      echo "Nothing to do. An updated certificate was not specified."
+    else
+      certificate=$(format_certificate "${OPSMAN_TLS_CRT}")
+      private_key=$(format_certificate "${OPSMAN_TLS_KEY}")
+      payload=$(generate_json "${certificate}" "${private_key}")
+      update_certificate "${certificate}" "${private_key}" "${payload}"
+      poll_opsman "${OPSMAN_DOMAIN_OR_IP_ADDRESS}" "${POLL_ATTEMPTS}" "${POLL_INTERVAL}"
+      fetch_certificate
+    fi
