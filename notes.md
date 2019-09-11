@@ -32,6 +32,8 @@ root@0d5dcefdcadb:/# apt-get install sshpass
 root@0d5dcefdcadb:/# apt-get install jq
 root@0d5dcefdcadb:/# scp user@some-ip:/bin/uaa-cli .
 root@0d5dcefdcadb:/# mv uaa-cli /usr/bin/uaa
+root@0d5dcefdcadb:/# wget https://github.com/pivotal-cf/om/releases/download/3.2.2/om-linux-3.2.2
+root@0d5dcefdcadb:/# mv om-linux-3.2.2 /usr/bin/om
 root@0d5dcefdcadb:/# exit
 ```
 
