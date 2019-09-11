@@ -15,6 +15,56 @@ $ brew install keychain
 $ eval `keychain --eval --agents ssh --inherit any cbusch`
 ```
 
+## Extend Docker Image
+
+Import the image to your local docker:
+
+```bash
+docker import platform-automation-image-4.0.1.tgz platform-automation:4.0.1
+```
+
+Create a container and install additional tools and updates by running the image:
+
+```bash
+docker -it platform-automation-image:4.0.1 /bin/bash
+root@0d5dcefdcadb:/# apt-get install wget
+root@0d5dcefdcadb:/# apt-get install sshpass
+root@0d5dcefdcadb:/# apt-get install jq
+root@0d5dcefdcadb:/# scp user@some-ip:/bin/uaa-cli .
+root@0d5dcefdcadb:/# mv uaa-cli /usr/bin/uaa
+root@0d5dcefdcadb:/# exit
+```
+
+Export the updated file system to a zipped tar file that can be used for docker import again somewhere else:
+
+```bash
+docker ps -a
+CONTAINER ID     IMAGE                        COMMAND        CREATED           STATUS                     PORTS    NAMES
+0d5dcefdcadb     platform-automation:4.0.1    "/bin/bash"    3 minutes ago     Exited (0) 3 seconds ago            naughty_williams
+e4f795ca200b     platform-automation:4.0.1    "/bin/bash"    19 hours ago      Exited (0) 19 hours ago             crazy_diffie
+
+docker export 0d5dce | gzip -c > platform-automation-image-4.0.1-u1.tgz
+```
+
+Where `0d5dce` is the characters of the CONTAINER ID being exported. The `export` command `tar`s up the filesystem and the `gzip` command compresses it.
+
+Test the new `tgz` by doing an import with a different tag:
+
+```bash
+docker import platform-automation-image-4.0.1-u1.tgz platform-automation:4.0.1u1
+```
+
+Clean up the containers and images.
+
+```bash
+# remove all containers
+docker rm $(docker ps -a -q)
+
+# remove the image
+docker rmi platform-automation:4.0.1u1 platform-automation:4.0.1
+```
+
+
 ## CONCOURSE
 
 ### login to the team
@@ -93,7 +143,6 @@ bosh interpolate \
 bosh interpolate <(awk -v ORS='\\n' '1' <(printenv DIRECTOR_CONFIG | tr -d '\r')) > config/director.yml
 bosh interpolate <(awk -v ORS='\\n' '1' <(echo -n "${OPSMAN_CONFIG}" | tr -d '\r') | sed -e 's/..$//') > config/opsman.yml
 ```
-
 
 ## GIT
 
