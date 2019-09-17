@@ -597,6 +597,13 @@ credhub set -t certificate -n /concourse/letsencrypt \
             -r "$( sudo cat /etc/letsencrypt/live/pcf.domain.com/chain.pem )"
 ```
 
+#### Convert P12 to PEM
+
+```bash
+openssl pkcs12 -in path.p12 -out newfile.crt.pem -clcerts -nokeys
+openssl pkcs12 -in path.p12 -out newfile.key.pem -nocerts -nodes
+```
+
 #### OPERATIONS MANAGER generated certs and credhub
 
 ```bash
