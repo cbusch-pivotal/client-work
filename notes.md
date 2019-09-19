@@ -656,3 +656,15 @@ Then run:
 ```bash
 om download-product --config download-config.yml --output-directory . --source s3
 ```
+
+## Unlock Opsman
+
+Need the decryption passphrase to get back into Opsman
+
+```bash
+sudo touch /var/tempest/workspaces/default/rescue_mode
+sudo service tempest-web restart
+
+sudo rm /var/tempest/workspaces/default/rescue_mode
+sudo service tempest-web restart
+```
