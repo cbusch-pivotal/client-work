@@ -1,0 +1,4 @@
+- type: replace
+  path: /product-properties/.properties.registry_storage.s3.endpoint_url?
+  value:
+    value: ((registry_storage_s3_endpoint_url))

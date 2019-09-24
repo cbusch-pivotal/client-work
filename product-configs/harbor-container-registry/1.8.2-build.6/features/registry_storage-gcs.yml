@@ -1,0 +1,17 @@
+- type: replace
+  path: /product-properties/.properties.registry_storage?
+  value:
+    value: gcs
+    selected_option: gcs
+- type: replace
+  path: /product-properties/.properties.registry_storage.gcs.bucket?
+  value:
+    value: ((registry_storage_gcs_bucket))
+- type: replace
+  path: /product-properties/.properties.registry_storage.gcs.chunksize?
+  value:
+    value: ((registry_storage_gcs_chunksize))
+- type: replace
+  path: /product-properties/.properties.registry_storage.gcs.keyfile?
+  value:
+    value: ((registry_storage_gcs_keyfile))

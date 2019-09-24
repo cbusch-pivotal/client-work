@@ -1,0 +1,4 @@
+clair_updater_interval: 0
+no_proxy: 127.0.0.1,localhost,ui,registry
+with_clair: true
+with_notary: true

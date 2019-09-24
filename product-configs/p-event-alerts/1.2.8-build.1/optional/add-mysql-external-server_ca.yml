@@ -1,0 +1,4 @@
+- type: replace
+  path: /product-properties/.properties.mysql.external.server_ca?
+  value:
+    value: ((mysql_external_server_ca))

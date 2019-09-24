@@ -1,0 +1,4 @@
+- type: replace
+  path: /product-properties/.properties.vm_monitor.wavefront_monitor.hostname?
+  value:
+    value: ((vm_monitor_wavefront_monitor_hostname))

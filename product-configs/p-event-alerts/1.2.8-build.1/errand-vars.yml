@@ -1,0 +1,2 @@
+deploy-pcf-event-alerts_post_deploy_state: default
+destroy-pcf-event-alerts_pre_delete_state: default

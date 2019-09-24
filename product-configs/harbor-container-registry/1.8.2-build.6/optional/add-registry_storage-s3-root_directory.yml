@@ -1,0 +1,4 @@
+- type: replace
+  path: /product-properties/.properties.registry_storage.s3.root_directory?
+  value:
+    value: ((registry_storage_s3_root_directory))

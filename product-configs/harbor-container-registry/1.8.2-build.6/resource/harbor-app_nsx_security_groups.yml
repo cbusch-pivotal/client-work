@@ -1,0 +1,3 @@
+- type: replace
+  path: /resource-config?/harbor-app?/nsx_security_groups?
+  value: ((harbor-app_nsx_security_groups))

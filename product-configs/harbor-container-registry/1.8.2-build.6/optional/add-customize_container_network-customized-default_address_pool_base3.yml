@@ -1,0 +1,4 @@
+- type: replace
+  path: /product-properties/.properties.customize_container_network.customized.default_address_pool_base3?
+  value:
+    value: ((customize_container_network_customized_default_address_pool_base3))

@@ -1,0 +1,9 @@
+- type: replace
+  path: /product-properties/.properties.registry_storage?
+  value:
+    value: nfs
+    selected_option: nfs
+- type: replace
+  path: /product-properties/.properties.registry_storage.nfs.server_uri?
+  value:
+    value: ((registry_storage_nfs_server_uri))

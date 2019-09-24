@@ -1,0 +1,5 @@
+- type: replace
+  path: /product-properties/.properties.auth_mode?
+  value:
+    value: uaa_auth_pks
+    selected_option: uaa_auth_pks

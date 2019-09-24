@@ -1,0 +1,2 @@
+smoke-testing_post_deploy_state: default
+uaa-deregistration_pre_delete_state: default

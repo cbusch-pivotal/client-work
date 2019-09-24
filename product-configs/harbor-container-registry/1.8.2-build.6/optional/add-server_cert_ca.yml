@@ -1,0 +1,4 @@
+- type: replace
+  path: /product-properties/.properties.server_cert_ca?
+  value:
+    value: ((server_cert_ca))

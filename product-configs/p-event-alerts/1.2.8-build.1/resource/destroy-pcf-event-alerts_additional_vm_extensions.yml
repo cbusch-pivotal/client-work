@@ -1,0 +1,3 @@
+- type: replace
+  path: /resource-config?/destroy-pcf-event-alerts?/additional_vm_extensions?
+  value: ((destroy-pcf-event-alerts_additional_vm_extensions))

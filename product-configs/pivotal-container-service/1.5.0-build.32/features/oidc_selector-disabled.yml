@@ -1,0 +1,5 @@
+- type: replace
+  path: /product-properties/.properties.oidc_selector?
+  value:
+    value: disabled
+    selected_option: disabled

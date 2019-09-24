@@ -1,0 +1,25 @@
+- type: replace
+  path: /product-properties/.properties.registry_storage?
+  value:
+    value: s3
+    selected_option: s3
+- type: replace
+  path: /product-properties/.properties.registry_storage.s3.region?
+  value:
+    value: ((registry_storage_s3_region))
+- type: replace
+  path: /product-properties/.properties.registry_storage.s3.bucket?
+  value:
+    value: ((registry_storage_s3_bucket))
+- type: replace
+  path: /product-properties/.properties.registry_storage.s3.chunksize?
+  value:
+    value: ((registry_storage_s3_chunksize))
+- type: replace
+  path: /product-properties/.properties.registry_storage.s3.v4auth?
+  value:
+    value: ((registry_storage_s3_v4auth))
+- type: replace
+  path: /product-properties/.properties.registry_storage.s3.secure?
+  value:
+    value: ((registry_storage_s3_secure))

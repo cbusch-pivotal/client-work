@@ -1,0 +1,4 @@
+deploy-pcf-event-alerts_instance_count: 5
+deploy-pcf-event-alerts_metrics_forwarder_enabled: true
+smtp_selector_enabled_smtp_insecure_skip_verify: false
+smtp_selector_enabled_smtp_tls_enabled: true

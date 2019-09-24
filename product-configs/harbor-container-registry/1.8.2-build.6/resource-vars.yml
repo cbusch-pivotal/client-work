@@ -1,0 +1,3 @@
+harbor-app_instance_type: automatic
+harbor-app_persistent_disk_size: automatic
+smoke-testing_instance_type: automatic

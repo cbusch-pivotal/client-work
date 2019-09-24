@@ -1,0 +1,4 @@
+- type: replace
+  path: /product-properties/.properties.registry_storage.gcs.root_directory?
+  value:
+    value: ((registry_storage_gcs_root_directory))

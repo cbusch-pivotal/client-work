@@ -1,0 +1,2 @@
+deploy-pcf-event-alerts_instance_type: automatic
+destroy-pcf-event-alerts_instance_type: automatic

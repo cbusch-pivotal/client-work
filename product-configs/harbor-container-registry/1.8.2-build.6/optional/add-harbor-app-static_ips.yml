@@ -1,0 +1,4 @@
+- type: replace
+  path: /product-properties/.harbor-app.static_ips?
+  value:
+    value: ((harbor-app_static_ips))

@@ -1,0 +1,13 @@
+- type: replace
+  path: /product-properties/.properties.vm_monitor?
+  value:
+    value: wavefront_monitor
+    selected_option: wavefront_monitor
+- type: replace
+  path: /product-properties/.properties.vm_monitor.wavefront_monitor.url?
+  value:
+    value: ((vm_monitor_wavefront_monitor_url))
+- type: replace
+  path: /product-properties/.properties.vm_monitor.wavefront_monitor.token?
+  value:
+    value: ((vm_monitor_wavefront_monitor_token))

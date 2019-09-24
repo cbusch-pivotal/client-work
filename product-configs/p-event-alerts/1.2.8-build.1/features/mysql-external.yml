@@ -1,0 +1,36 @@
+- type: replace
+  path: /product-properties/.properties.mysql?
+  value:
+    value: External DB
+    selected_option: external
+- type: remove
+  path: /product-properties/.properties.mysql.internal.plan_name?
+- type: replace
+  path: /product-properties/.properties.mysql.external.host?
+  value:
+    value: ((mysql_external_host))
+- type: replace
+  path: /product-properties/.properties.mysql.external.port?
+  value:
+    value: ((mysql_external_port))
+- type: replace
+  path: /product-properties/.properties.mysql.external.username?
+  value:
+    value: ((mysql_external_username))
+- type: replace
+  path: /product-properties/.properties.mysql.external.password?
+  value:
+    value:
+      secret: ((mysql_external_password))
+- type: replace
+  path: /product-properties/.properties.mysql.external.database?
+  value:
+    value: ((mysql_external_database))
+- type: replace
+  path: /product-properties/.properties.mysql.external.use_tls?
+  value:
+    value: ((mysql_external_use_tls))
+- type: replace
+  path: /product-properties/.properties.mysql.external.skip_ssl_validation?
+  value:
+    value: ((mysql_external_skip_ssl_validation))

@@ -1,0 +1,5 @@
+- type: replace
+  path: /product-properties/.properties.auth_mode?
+  value:
+    value: ldap_auth
+    selected_option: ldap_auth

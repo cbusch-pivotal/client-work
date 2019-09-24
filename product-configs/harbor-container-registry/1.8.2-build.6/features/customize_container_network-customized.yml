@@ -1,0 +1,13 @@
+- type: replace
+  path: /product-properties/.properties.customize_container_network?
+  value:
+    value: customized
+    selected_option: customized
+- type: replace
+  path: /product-properties/.properties.customize_container_network.customized.default_address_pool_base1?
+  value:
+    value: ((customize_container_network_customized_default_address_pool_base1))
+- type: replace
+  path: /product-properties/.properties.customize_container_network.customized.default_address_pool_size1?
+  value:
+    value: ((customize_container_network_customized_default_address_pool_size1))

@@ -1,0 +1,3 @@
+- type: replace
+  path: /resource-config?/smoke-testing?/additional_vm_extensions?
+  value: ((smoke-testing_additional_vm_extensions))

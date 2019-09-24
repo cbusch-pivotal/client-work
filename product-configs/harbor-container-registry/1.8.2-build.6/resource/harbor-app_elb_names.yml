@@ -1,0 +1,3 @@
+- type: replace
+  path: /resource-config?/harbor-app?/elb_names?
+  value: ((harbor-app_elb_names))

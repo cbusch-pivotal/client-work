@@ -1,0 +1,17 @@
+- type: replace
+  path: /product-properties/.properties.smtp_selector?
+  value:
+    value: Disabled
+    selected_option: disabled
+- type: remove
+  path: /product-properties/.properties.smtp_selector.enabled.smtp_from?
+- type: remove
+  path: /product-properties/.properties.smtp_selector.enabled.smtp_address?
+- type: remove
+  path: /product-properties/.properties.smtp_selector.enabled.smtp_port?
+- type: remove
+  path: /product-properties/.properties.smtp_selector.enabled.smtp_credentials?
+- type: remove
+  path: /product-properties/.properties.smtp_selector.enabled.smtp_tls_enabled?
+- type: remove
+  path: /product-properties/.properties.smtp_selector.enabled.smtp_insecure_skip_verify?
