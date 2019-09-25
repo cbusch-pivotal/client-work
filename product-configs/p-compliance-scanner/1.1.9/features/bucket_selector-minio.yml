@@ -1,0 +1,22 @@
+- type: replace
+  path: /product-properties/.properties.bucket_selector?
+  value:
+    value: minio
+    selected_option: minio
+- type: replace
+  path: /product-properties/.properties.bucket_selector.minio.bucket_name?
+  value:
+    value: ((bucket_selector_minio_bucket_name))
+- type: replace
+  path: /product-properties/.properties.bucket_selector.minio.bucket_host?
+  value:
+    value: ((bucket_selector_minio_bucket_host))
+- type: replace
+  path: /product-properties/.properties.bucket_selector.minio.bucket_key?
+  value:
+    value: ((bucket_selector_minio_bucket_key))
+- type: replace
+  path: /product-properties/.properties.bucket_selector.minio.bucket_secret?
+  value:
+    value:
+      secret: ((bucket_selector_minio_bucket_secret))

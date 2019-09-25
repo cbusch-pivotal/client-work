@@ -1,0 +1,18 @@
+- type: replace
+  path: /product-properties/.properties.bucket_selector?
+  value:
+    value: aws
+    selected_option: aws
+- type: replace
+  path: /product-properties/.properties.bucket_selector.aws.bucket_region?
+  value:
+    value: ((bucket_selector_aws_bucket_region))
+- type: replace
+  path: /product-properties/.properties.bucket_selector.aws.bucket_key?
+  value:
+    value: ((bucket_selector_aws_bucket_key))
+- type: replace
+  path: /product-properties/.properties.bucket_selector.aws.bucket_secret?
+  value:
+    value:
+      secret: ((bucket_selector_aws_bucket_secret))

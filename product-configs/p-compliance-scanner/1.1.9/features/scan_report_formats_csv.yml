@@ -1,0 +1,3 @@
+- type: replace
+  path: /product-properties/.properties.scan_report_formats?/value/-
+  value: csv
