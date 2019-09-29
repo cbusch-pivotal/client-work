@@ -15,7 +15,9 @@ $ brew install keychain
 $ eval `keychain --eval --agents ssh --inherit any cbusch`
 ```
 
-## Extend Docker Image
+## Docker Images
+
+### Extend Docker Image
 
 Import the image to your local docker:
 
@@ -66,6 +68,37 @@ docker rm $(docker ps -a -q)
 docker rmi platform-automation:4.0.1u1 platform-automation:4.0.1
 ```
 
+### Save and Load Images between Docker Registries
+
+Import the image locally:
+
+```bash
+docker pull nginx:latest
+```
+
+Save and compress the image. This would be done when tranferring to an air-gapped environment:
+
+```bash
+docker save nginx:latest | gzip -c > nginx.tgz
+```
+
+Transfer the image where necessary, such as the air-gapped environment, and import as such:
+
+```bash
+docker load -i nginx.tgz
+```
+
+The image should be in the exact condition as originally `pull`ed from the source.
+
+If this other Docker Registry is reachable from the local environment, then add a new tag to the image and push it to the other registry as such:
+
+```bash
+# add a second tag to the image
+docker tag nginx:latest harbor.control.busch.local/myimages/nginx:latest
+
+# push to the other reachable registry
+docker push harbor.control.busch.local/myimages/nginx:latest
+```
 
 ## CONCOURSE
 
