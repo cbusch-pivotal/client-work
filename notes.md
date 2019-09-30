@@ -7,6 +7,12 @@ brew tap pivotal-cf/om https://github.com/pivotal-cf/om
 brew install pivotal-cf/om/om
 ```
 
+### Clear HSTS error in Chrome
+chrome://net-internals/#hsts
+
+**Delete domain security policies**
+
+
 ## Remember ssh key passwords
 https://www.funtoo.org/Keychain
 
