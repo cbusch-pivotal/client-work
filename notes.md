@@ -319,6 +319,12 @@ awk -F'[(())]' '/\(\(/ {print $3}' mysql-pipeline.yml | sort | uniq
 cf services | awk '{if(NR>3)print $4}'
 ```
 
+#### Compare two directories
+
+```bash
+diff -rq dir1 dir2
+```
+
 #### Get service instance IP
 
 ```bash
