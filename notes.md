@@ -7,6 +7,12 @@ brew tap pivotal-cf/om https://github.com/pivotal-cf/om
 brew install pivotal-cf/om/om
 ```
 
+### Clear HSTS error in Chrome
+chrome://net-internals/#hsts
+
+**Delete domain security policies**
+
+
 ## Remember ssh key passwords
 https://www.funtoo.org/Keychain
 
@@ -311,6 +317,12 @@ awk -F'[(())]' '/\(\(/ {print $3}' mysql-pipeline.yml | sort | uniq
 
 # get apps connected to services, skipping first 3 lines
 cf services | awk '{if(NR>3)print $4}'
+```
+
+#### Compare two directories
+
+```bash
+diff -rq dir1 dir2
 ```
 
 #### Get service instance IP
