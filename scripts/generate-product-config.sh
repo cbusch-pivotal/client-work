@@ -30,8 +30,8 @@ echo "INFO: Generating ${product_slug} configuration template into the '${tempdi
 om config-template \
    --pivnet-api-token "${pivnet_api_token}" \
    --pivnet-product-slug "${product_slug}" \
+   --pivnet-file-glob "${product_file_glob}" \
    --product-version "${product_version}" \
-   --product-file-glob "${product_file_glob}" \
    --output-directory "${tempdir}"
 if [ $? -ne 0 ]; then
     echo "ERROR: 'om config-template' call failed..."
@@ -51,10 +51,12 @@ if [ -f "${varsfile}" ]; then rm "${varsfile}"; fi
 
 echo "INFO: Merging vars into a ${product_slug}-vars.yml file..."
 
-{ echo "# ERRAND VARS"; \
+{ echo "# REQUIRED VARS"; \
+  cat "${proddir}"/required-vars.yml; \
+  echo -e "\n# ERRAND VARS"; \
   cat "${proddir}"/errand-vars.yml; \
   echo -e "\n# PRODUCT DEFAULT VARS"; \
-  cat "${proddir}"/product-default-vars.yml; \
+  cat "${proddir}"/default-vars.yml; \
   echo -e "\n# RESOURCE CONFIG VARS"; \
   cat "${proddir}"/resource-vars.yml; } \
   >> "${varsfile}"
@@ -66,7 +68,7 @@ cat "${product_slug}".yml | awk -F'[(())]' '/\(\(/ {print $3}' | sort | uniq > p
 # create a product secrets yml then concatentating the original products vars onto it,
 # and finally overwriting the original product vars with the one containing secrets.
 diff --suppress-common-lines product-vars.lst product-template-vars.lst | grep "^>" | sed 's/^> //g' > secrets.yml
-{ echo "# SECRET VARS"; \
+{ echo "# UNDEFINED VARS"; \
   cat secrets.yml; \
   echo ""; \
   cat "${varsfile}"; } \
@@ -79,4 +81,3 @@ rm "${varsfile}" secrets.yml product-*.lst
 echo -e "\n\nTODO: Copy the ${product_slug}-vars.yml to the 'platform-automation-pipelines/foundations/<foundation>/vars' directory"
 echo    "IMPORTANT: Edit the 'SECRET VARS' section at the top to add the CREDHUB credential placeholders for runtime resolution."
 echo -e "\nTODO: Copy the ${product_slug}.yml to the 'platform-automation-pipelines/foundations/<foundation>/product' directory"
-
