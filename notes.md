@@ -21,6 +21,24 @@ $ brew install keychain
 $ eval `keychain --eval --agents ssh --inherit any cbusch`
 ```
 
+## Remember globstar
+
+By default, `**/` is the same as `*/`. Make `**/` recursive.
+
+```bash
+echo "shopt -s globstar" >> $HOME/.bashrc
+```
+
+Uses:
+
+```bash
+# find all files with a .tgz extension recursively
+ls -l **/*.tgz
+
+# remove all .tmp files recursively, interactive
+rm -i **/*.tmp
+```
+
 ## Docker Images
 
 ### Extend Docker Image
