@@ -3,55 +3,55 @@
 **Table of Contents**
 
 - [AWS WorkSpaces](#aws-workspaces)
-  - [WorkSpace Tools](#workspace-tools)
+    - [WorkSpace Tools](#workspace-tools)
 - [Jumpbox](#jumpbox)
-  - [Jumpbox Tools](#jumpbox-tools)
-    - [Included io Ops Manager AMI](#included-io-ops-manager-ami)
-    - [Additional Tools](#additional-tools)
-  - [Jumpbox Updates](#jumpbox-updates)
-    - [Docker Installation](#docker-installation)
-    - [EBS Resizing of the Jumpbox](#ebs-resizing-of-the-jumpbox)
-  - [AWS CodeCommit](#aws-codecommit)
-  - [BitBucket](#bitbucket)
-  - [Control Plane](#control-plane)
-    - [Operations Manager](#operations-manager)
-  - [DEV](#dev)
-    - [Apps Manager](#apps-manager)
-  - [Sandbox](#sandbox)
-    - [Apps Manager](#apps-manager-1)
+    - [Jumpbox Tools](#jumpbox-tools)
+        - [Included io Ops Manager AMI](#included-io-ops-manager-ami)
+        - [Additional Tools](#additional-tools)
+    - [Using the Jumpbox](#using-the-jumpbox)
+    - [Jumpbox Updates](#jumpbox-updates)
+        - [Docker Installation](#docker-installation)
+        - [EBS Resizing of the Jumpbox](#ebs-resizing-of-the-jumpbox)
+            - [Increase EBS Volume](#increase-ebs-volume)
+            - [Decrease EBS Volume](#decrease-ebs-volume)
+    - [AWS CodeCommit](#aws-codecommit)
+    - [BitBucket](#bitbucket)
+    - [Control Plane](#control-plane)
+        - [Operations Manager](#operations-manager)
+    - [DEV](#dev)
+        - [Apps Manager](#apps-manager)
+    - [Sandbox](#sandbox)
+        - [Apps Manager](#apps-manager-1)
 - [Concourse](#concourse)
 - [Credhub](#credhub)
 - [Harbor](#harbor)
-  - [Using a Self-Signed Certificate](#using-a-self-signed-certificate)
-    - [CERTIFICATE](#certificate)
-    - [PRIVATE_KEY](#privatekey)
-    - [CA-CERT](#ca-cert)
-  - [Importing Images](#importing-images)
-    - [Import some images](#import-some-images)
-    - [Tag to import in Harbor](#tag-to-import-in-harbor)
-    - [Log into Harbor](#log-into-harbor)
-    - [Push to Harbor](#push-to-harbor)
+    - [Using a Self-Signed Certificate](#using-a-self-signed-certificate)
+        - [CERTIFICATE](#certificate)
+        - [PRIVATE_KEY](#private_key)
+        - [CA-CERT](#ca-cert)
+    - [Importing Images](#importing-images)
+        - [Import some images](#import-some-images)
+        - [Tag to import in Harbor](#tag-to-import-in-harbor)
+        - [Log into Harbor](#log-into-harbor)
+        - [Push to Harbor](#push-to-harbor)
 - [PKS API Server](#pks-api-server)
-  - [Target uaa to create a user account](#target-uaa-to-create-a-user-account)
-  - [Create the uaa user](#create-the-uaa-user)
-  - [Add user to appropriate uaa scopes](#add-user-to-appropriate-uaa-scopes)
-  - [Create the cluster](#create-the-cluster)
-  - [Setup the ALB Ingress Controller](#setup-the-alb-ingress-controller)
+    - [Target uaa to create a user account](#target-uaa-to-create-a-user-account)
+    - [Create the uaa user](#create-the-uaa-user)
+    - [Add user to appropriate uaa scopes](#add-user-to-appropriate-uaa-scopes)
+    - [Create the cluster](#create-the-cluster)
+    - [BOSH completion](#bosh-completion)
+    - [Setup the ALB Ingress Controller](#setup-the-alb-ingress-controller)
 - [CERTIFICATES AND DOMAINS](#certificates-and-domains)
-  - [CONTROL PLANE](#control-plane)
-  - [DEV](#dev-1)
-  - [SANDBOX](#sandbox)
-  - [OTHER ENVs](#other-envs)
+    - [CONTROL PLANE](#control-plane)
+    - [DEV](#dev-1)
+    - [SANDBOX](#sandbox)
+    - [OTHER ENVs](#other-envs)
 - [Tips and Tricks](#tips-and-tricks)
-  - [Add CA-CERT to VM](#add-ca-cert-to-vm)
-  - [Change OM IP to DNS](#change-om-ip-to-dns)
-- [Tech Debt](#tech-debt)
-  - [Control Plane](#control-plane-1)
-    - [Operations Manager](#operations-manager-1)
+    - [Add CA-CERT to VM](#add-ca-cert-to-vm)
+    - [Change OM IP to DNS](#change-om-ip-to-dns)
 - [Certificates for local Workspace Image](#certificates-for-local-workspace-image)
 - [Cleaning up the domain change in PAS](#cleaning-up-the-domain-change-in-pas)
 - [Setting up service key policies for AWS Service Broker Tile](#setting-up-service-key-policies-for-aws-service-broker-tile)
- 
 
 ---
 
@@ -497,12 +497,12 @@ docker push harbor.control.domain.com/library/platform-automation:4.3.2
 
 ---
 
-## PKS API Server 
+## PKS API Server
 
 https://api.pks.dev.domain.com:8443 (This DNS entry is tied to an internal LB with a CNAME entry)
 PKS API Server Cert 
 
-### Target uaa to create a user account 
+### Target uaa to create a user account
 
 ```bash
 $ uaac target https://api.pks.dev.domain.com:8443 --ca-cert pas-dev.pem --skip-ssl-validation
@@ -514,7 +514,7 @@ Use the PKS -> Credentials -> Pks Uaa Management Admin Client secret
 $ uaac token client get admin -s <secret>
 ```
 
-### Create the uaa user 
+### Create the uaa user
 
 ```bash
 $ uaac user add theUser --emails theUser@example.com -p password
@@ -540,7 +540,7 @@ Login w/ account created (will prompt for password)
 $ pks login -a api.pks.dev.domain.com -u theUser -k
 ```
 
-### Create the cluster 
+### Create the cluster
 
 The external hostname can be an ip address, but preferably something that a DNS entry attached to it! 
 
@@ -548,7 +548,6 @@ The external hostname can be an ip address, but preferably something that a DNS 
 $ pks create-cluster test \
       --plan small \
       --external-hostname test-cluster.pks.dev.domain.com
- 
 ```
 
 Displays if the cluster creations succeeded or failed
@@ -556,15 +555,15 @@ Displays if the cluster creations succeeded or failed
 ```bash
 $ watch pks cluster test 
 $ pks get-credentials test
+```
 
-
-This config file defaults to a hidden .kube directory in the user's home directory. Can port the directory or specifically the config file to other workstations and work from there
+This config file defaults to a hidden `.kube` directory in the users home directory. Can port the directory or specifically the config file to other workstations and work from there.
 
 ```bash
 $ kubectl config use-context test
 ```
 
-kubectl completion is configured on the jumpbox within the .bashrc file. The command added is:
+`kubectl` completion is configured on the jumpbox within the `.bashrc` file. The command added is:
 
 ```bash
 $ source <(kubectl completion bash)   # >
@@ -597,7 +596,6 @@ echo 'eval "$(/usr/local/bin/bosh-complete zsh-source)"' >> $HOME/.zshrc
 
 (Kubernetes reference: https://kubernetes-sigs.github.io/aws-alb-ingress-controller/guide/controller/setup/)
 
-
 The rbac-config file creates the service acct required to give the ingress controller cluster-wide access for future deployment services.
 These services should be type `nodeport` or `loadbalancer`.  At the operator/developer/admin discretion rbac can be configured to specific namespace.
 (Current state is full access to the cluster.)
@@ -607,20 +605,22 @@ $ kubectl create -f rbac-role.yaml
 ```
 
 To deploy the ingress controller:
+
 ```bash
 $ kubectl apply -f alb-ingress-controller.yaml
 ```
 
 To confirm the deployment:
+
 ```bash
 $ kubectl describe deployment/alb-ingress-controller -n kube-system
 ```
 
 To confirm proper permissions you can check the logs.  (The `Administrators` group can be applied to the IAM user acct to provide permissions.)
+
 ```bash
 $ kubectl logs deployment/alb-ingress-controller -n kube-system
 ```
-
 
 ---
 
@@ -753,50 +753,8 @@ $ sudo shutdown -r now
 
 ---
 
-## Tech Debt
-
-### Control Plane
-
-#### Operations Manager
-
-Network Configuration
-1. Infrastructure setup uses 10.150.16.1-10.150.16.5,10.150.16.15 exclude range. BOSH Director captures x.x.16.6 but OM is using x.x.16.13, which should be the other exclude, not x.x.16.15.
-
----
-
-## Manual Installation
-
-### Control Plane
-
-1. Prepare OM
-  1. Enable Post Deploy Scripts
-  2. Bump director persistent disk to 200GB
-  3. Create “pks” network - three subnets
-  4. Apply Changes
-2. Harbor
-  1. Import Harbor tile
-  2. Configure Harbor tile
-  3. Create harbor.control.domain.com DNS entry
-  4. Apply Changes
-
-### DEV Foundation
-
-3. Prepare OM
-  1. Enable Post Deploy Scripts
-  2. Bump director persistent disk to 200GB
-  3. Create “pks” network - three subnets
-  4. Apply Changes
-4. PKS Tile
-  1. Import PKS Tile
-  2. Configure PKS Tile
-    1. PKS SSL certificate
-    2. Create the DNS for api.xxxx
-    3. Calculate PLAN sizes (https://docs.pivotal.io/pks/1-5/vm-sizing.html)
-  3. Apply Changes
-
----
-
 ## Certificates for local Workspace Image
+
 To remedy the cert not showing up as trusted/Connection not secure. Follow the steps below:
 
 1. Download the root-ca.pem from S3
@@ -840,7 +798,3 @@ Below is a working configuration for the PCFAppDeveloperPolicy-s3 policy.  Notic
     ]
 }
 ```
-
----
-
-Automate the Installation
