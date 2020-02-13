@@ -1,0 +1,115 @@
+az-configuration:
+- name: az1
+  iaas_configuration_name: default
+  clusters:
+  - cluster: Cluster
+    host_group: null
+    resource_pool: null
+iaas-configurations:
+- additional_cloud_properties: {}
+  bosh_disk_path: pks_disk
+  bosh_template_folder: pks_templates
+  bosh_vm_folder: pks_vms
+  datacenter: Datacenter
+  disk_type: thin
+  ephemeral_datastores_string: datastore1
+  name: default
+  nsx_networking_enabled: false
+  persistent_datastores_string: datastore1
+  ssl_verification_enabled: false
+  vcenter_host: vcsa1.busch.local
+  vcenter_password: password
+  vcenter_username: administrator@busch.local
+network-assignment:
+  network:
+    name: infrastructure
+  other_availability_zones: []
+  singleton_availability_zone:
+    name: az1
+networks-configuration:
+  icmp_checks_enabled: true
+  networks:
+  - name: infrastructure
+    subnets:
+    - iaas_identifier: VM Network
+      cidr: 10.0.0.0/24
+      dns: 192.168.1.252
+      gateway: 10.0.0.1
+      reserved_ip_ranges: 10.0.0.0-10.0.0.20
+      availability_zone_names:
+      - az1
+  - name: pks
+    subnets:
+    - iaas_identifier: VM Network
+      cidr: 10.0.0.0/22
+      dns: 192.168.1.252
+      gateway: 10.0.0.1
+      reserved_ip_ranges: 10.0.0.0-10.0.0.255
+      availability_zone_names:
+      - az1
+properties-configuration:
+  director_configuration:
+    blobstore_type: local
+    bosh_recreate_on_next_deploy: false
+    bosh_recreate_persistent_disks_on_next_deploy: false
+    database_type: internal
+    director_worker_count: 5
+    encryption:
+      keys: []
+      providers: []
+    hm_emailer_options:
+      enabled: false
+    hm_pager_duty_options:
+      enabled: false
+    identification_tags: {}
+    job_configuration_on_tmpfs: false
+    keep_unreachable_vms: false
+    local_blobstore_options:
+      tls_enabled: true
+    ntp_servers_string: pool.ntp.org
+    post_deploy_enabled: true
+    resurrector_enabled: true
+    retry_bosh_deploys: false
+    skip_director_drain: false
+  dns_configuration:
+    excluded_recursors: []
+    handlers: []
+  security_configuration:
+    generate_vm_passwords: true
+    opsmanager_root_ca_trusted_certs: false
+  syslog_configuration:
+    enabled: false
+resource-configuration:
+  compilation:
+    additional_networks: []
+    additional_vm_extensions: []
+    instance_type:
+      id: automatic
+    instances: automatic
+    nsx:
+      lbs: []
+      security_groups: []
+    nsxt:
+      lb:
+        server_pools: []
+      ns_groups: []
+    swap_as_percent_of_memory_size: automatic
+  director:
+    additional_networks: []
+    additional_vm_extensions: []
+    instance_type:
+      id: automatic
+    instances: automatic
+    nsx:
+      lbs: []
+      security_groups: []
+    nsxt:
+      lb:
+        server_pools: []
+      ns_groups: []
+    persistent_disk:
+      size_mb: "153600"
+    swap_as_percent_of_memory_size: automatic
+vmextensions-configuration: []
+vmtypes-configuration: {}
+
