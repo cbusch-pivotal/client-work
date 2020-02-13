@@ -380,9 +380,36 @@ spec:
         - name: "regcred"
 ```
 
-### Copy harbor certs to cluster workers
+### Copy Harbor certs to cluster workers
 
-BEFORE the cluster workers can access Harbor with a self-signed certificate, all three certs created earlier for Docker, `ca.crt`, `client.cert`, and `client.key`, must be copied to all workers in the cluster in a new directory "/etc/docker/certs.d/harbor.busch.local/". Remember to `sudo su -`, first.
+**NOTE**: BEFORE the cluster workers can access Harbor with a self-signed certificate, all three certs created earlier for Docker, `ca.crt`, `client.cert`, and `client.key`, must be copied to all workers in the cluster in a new directory "/etc/docker/certs.d/harbor.busch.local/". Remember to `sudo su -`, first.
+
+```bash
+# on the jumpbox
+. ./bosh-env
+
+# for each worker, 0, 1, and 2, do the following
+bosh -d <concourse-cluster-service-instance> ssh worker/0
+sudo su -
+# make .ssh directory and create private key for jumpbox access
+mkdir .ssh && vi .ssh/cbusch
+# paste in private ssh key and save file
+chmod 600 .ssh/cbusch
+
+# create certificate directory
+mkdir -p /etc/docker/certs.d/harbor.busch.local
+cd /etc/docker/certs.d/harbor.busch.local
+
+# cp certificates from jumpbox
+DOCKER_CERTS=/etc/docker/certs.d/harbor.busch.local
+LOCAL_CERTS=./certs/harbor.busch.local
+PRIVKEY=$HOME/.ssh/cbusch
+mkdir -p $DOCKER_CERTS
+scp -i $PRIVKEY ubuntu@jumpbox.busch.local:$LOCAL_CERTS/client.cert $DOCKER_CERTS
+scp -i $PRIVKEY ubuntu@jumpbox.busch.local:$LOCAL_CERTS/client.key $DOCKER_CERTS
+scp -i $PRIVKEY ubuntu@jumpbox.busch.local:$LOCAL_CERTS/ca.crt $DOCKER_CERTS
+# do next worker
+```
 
 ### Create the tiller deployment
 
@@ -464,6 +491,10 @@ spec:
         - name: "regcred"
 ```
 
+### Create certificates on cluster workers
+
+In order for the worker to access Harbor for images, when using a self-signed certficate, copy the `client.cert`, `client.key`, and `ca.crt` to all workers in the `/etc/docker/certs.d/harbor.busch.local`, as done [above](#copy-harbor-certs-to-cluster-workers).
+
 ### Deploy tiller
 
 ```bash
@@ -497,7 +528,9 @@ node/0b5c3a6a-393f-4c89-bbe3-93472f4ef75f tainted
 
 ## Deploy Concourse-helm
 
-# tolerate the web node
+### Add web and worker node tolerations
+
+```yaml
   tolerations:
   - key: "clusternode"
     operator: "Equal"
@@ -510,18 +543,5 @@ node/0b5c3a6a-393f-4c89-bbe3-93472f4ef75f tainted
     operator: "Equal"
     value: "worker"
     effect: "NoSchedule"
-
-# BEFORE the workers/master can access Harbor, all three certs created earlier for Docker,
-#  "ca.crt", "client.cert", and "client.key", must be put on all masters and workers in the cluster
-#  in the new directory "/etc/docker/certs.d/harbor.busch.local/" as "sudo su -".
-
-sudo su -
-mkdir .ssh
-vi .ssh/cbusch
-# paste cbusch private key or whatever used for VM's
-chmod 600 .ssh/cbusch
-mkdir -p /etc/docker/certs.d/harbor.busch.local
-cd /etc/docker/certs.d/harbor.busch.local
-scp -i $HOME/.ssh/cbusch ubuntu@jumpbox.busch.local:./certs/harbor.busch.local/* .
-
+```
 
