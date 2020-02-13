@@ -19,7 +19,7 @@ sudo systemctl start docker
 ### Install Brew and update PATH
 
 ```bash
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install.sh)"`
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install.sh)"
 
 PATH='/home/linuxbrew/.linuxbrew/bin:$PATH'
 ```
@@ -35,7 +35,7 @@ brew install minio/stable/mc
 ### Add lab configuration to minio
 
 ```bash
-mc config host add lab http://192.168.1.252:9000 RZ...GM ItnwG...0cWedvyTTw --api "s3v4"
+mc config host add lab http://<lab IP>:9000 RZ...GM ItnwG...0cWedvyTTw --api "s3v4"
 ```
 
 ### Setup bosh-env
