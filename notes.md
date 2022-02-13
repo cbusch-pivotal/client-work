@@ -632,7 +632,7 @@ $ monit stop all
 
 $ monit start postgres
 
-$ /var/vcap/packages/postgres-9.4/bin/psql -U vcap bosh -h 127.0.0.1 
+$ /var/vcap/packages/postgres-9.4/bin/psql -U vcap bosh -h 127.0.0.1
 
 select * from locks;
 
